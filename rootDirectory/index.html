@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Milestone 5</title>
+		<link href="styles.css" type="text/css" rel="stylesheet" />
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</head>
+
+	<body style="background-color: #b3c6ff">
+		<div class="row">
+            <div class="col-md-12">
+				<h1>#EAGM</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+            <div class="col-md-8">
+				<h3>GET</h3>
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose File
+					<span class="caret"></span></button>
+					<ul class="dropdown-menu" id="getDropdown">
+						<!-- Need to take these out -->
+						<li><a onclick="doGet('file1.txt')">File 1</a></li>
+						<li><a onclick="doGet('file2.txt')">File 2</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+            <div class="col-md-8">
+				<div>
+					<p id="getResult"></p>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8">
+				<h3>PUT</h3>
+				<div class="form-group">
+					<label for="comment">Body:</label>
+					<textarea class="form-control" rows="5" id="putBody"></textarea>
+					<br />
+					<button type="button" class="btn btn-primary btn-md" onclick="doPut()">Submit</button>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+            <div class="col-md-8">
+				<div>
+					<p id="putResult"></p>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8">
+				<h3>POST</h3>
+				<div class="form-group">
+					<label for="comment">Body:</label>
+					<textarea class="form-control" rows="5" id="postBody"></textarea>
+					<br />
+					<button type="button" class="btn btn-primary btn-md" onclick="doPost()">Submit</button>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+            <div class="col-md-8">
+				<div>
+					<p id="postResult"></p>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8">
+				<h3>DELETE</h3>
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose File
+					<span class="caret"></span></button>
+					<ul class="dropdown-menu" id="deleteDropdown">
+						<!-- Need to take these out -->
+						<li><a onclick="doDelete('file1.txt')">File1</a></li>
+						<li><a onclick="doDelete('file2.txt')">File2</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+            <div class="col-md-8">
+				<div>
+					<p id="deleteResult"></p>
+				</div>
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div style="text-align: center; margin: 50px;">
+					Copyright &copy; 2017
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script>
+	var url;
+
+	function doGet(file) {
+		url = "http://localhost:8004/microservice2/";
+		$.ajax({
+			type: "GET",
+            url: url+file,
+            dataType: "jsonp",
+            success: function(result) {
+				$("#getResult").html("");
+				html = file + "'s content: <br />";
+				html += result.responseText;
+                $("#getResult").html(html);
+            },
+			error: function(result) {
+				console.log(result);
+				if(result.status == 200) {
+					$("#getResult").html("");
+					html = file + "'s content: <br />";
+					html += result.responseText;
+					$("#getResult").html(html);
+				} else if (result.status == 404) {
+					$("#getResult").html("GET failed: 404 File Not Found");
+					setTimeout(function(){
+					$("#getResult").html("");
+					}, 5000);
+				} else {
+					$("#getResult").html("GET failed");
+					setTimeout(function(){
+					$("#getResult").html("");
+					}, 3000);
+				}
+            }
+        });
+	}
+	
+	function doDelete(file) {
+		url = "http://localhost:8004/microservice2/";
+		$.ajax({
+			type: "DELETE",
+            url: url + file,
+			dataType: "jsonp",
+            success: function(result) {
+				console.log(result);
+                $("#deleteResult").html("");
+				html = file + " deleted";
+                $("#deleteResult").html(html);
+            },
+			error: function(result) {
+				if (result.status == 200) {
+					console.log(result);
+					$("#deleteResult").html("");
+					html = file + " deleted";
+					$("#deleteResult").html(html);
+				} else if (result.status == 404) {
+					console.log(result);
+					$("#deleteResult").html("DELETE failed: 404 File Not Found");
+					setTimeout(function(){
+					$("#deleteResult").html("");
+					}, 5000);
+				} else {
+					console.log(result);
+					$("#deleteResult").html("DELETE failed");
+					setTimeout(function(){
+					$("#deleteResult").html("");
+					}, 3000);
+				}
+            }
+        });
+	}
+	
+	function doPut() {
+		url = "http://localhost:8004/microservice1/";
+		var body = document.getElementById("putBody").value;
+		var file = "";
+		var indexOfFile = body.indexOf(".txt");
+		if (body == "" || indexOfFile == -1) {
+			$("#putResult").html("You must give a body for the PUT request");
+			setTimeout(function(){
+			$("#putResult").html("");
+			}, 3000);
+		} else {
+			file = body.substring(0, indexOfFile + 4);
+			fullbody = body.substring(indexOfFile + 5);
+			var data = {"body": fullbody}
+			$.ajax({
+				type: "PUT",
+				url: url + file,
+				dataType: "jsonp",
+				data: data,
+				success: function(result) {
+					$("#putBody").html("");
+					html = "Put in " + file + "<br />";
+					$("#putResult").html(html);
+				},
+				error: function(result) {
+					if (result.status == 200) {
+						$("#putBody").html("");
+						html = "Put in " + file + "<br />";
+						$("#putResult").html(html);
+					} else if (result.status == 404) {
+						$("#putResult").html("PUT failed");
+						setTimeout(function(){
+						$("#putResult").html("");
+						}, 5000);
+					} else {
+						$("#putResult").html("PUT failed");
+						setTimeout(function(){
+						$("#putResult").html("");
+						}, 3000);
+					}
+					
+				}
+			});
+		}
+	}
+	
+	function doPost() {
+		url = "http://localhost:8004/microservice1/";
+		var body = document.getElementById("postBody").value;
+		var file = "";
+		var indexOfFile = body.indexOf(".txt");
+		if (body == "" || indexOfFile == -1) {
+			$("#postResult").html("You must give a body for the POST request");
+			setTimeout(function(){
+			$("#postResult").html("");
+			}, 3000);
+		} else {
+			file = body.substring(0, indexOfFile + 4);
+			fullbody = body.substring(indexOfFile + 5);
+			var data = {"body": fullbody}
+			$.ajax({
+				type: "POST",
+				url: url + file,
+				dataType: "jsonp",
+				data: data,
+				success: function(result) {
+					$("#postBody").html("");
+					html = "Posted to " + file + "<br />";
+					$("#postResult").html(html);
+				},
+				error: function(result) {
+					if (result.status == 200) {
+						$("#postBody").html("");
+						html = "Posted to " + file + "<br />";
+						$("#postResult").html(html);
+					} else if (result.status == 404) {
+						$("#postResult").html("POST failed: 404 File Not Found");
+						setTimeout(function(){
+						$("#postResult").html("");
+						}, 5000);
+					} else {
+						$("#postResult").html("POST failed");
+						setTimeout(function(){
+						$("#postResult").html("");
+						}, 3000);
+					}
+				}
+			});
+		}
+	}
+</script>
